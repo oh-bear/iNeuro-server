@@ -2,6 +2,7 @@ const sequelize = require('../config/sequelize').sequelize()
 const User = sequelize.import('./user')
 const Resource = sequelize.import('./resource')
 const Record = sequelize.import('./record')
+const Code = sequelize.import('./code')
 
 User.hasMany(Record, { as: 'record', foreignKey: 'user_id' })
 
@@ -16,4 +17,5 @@ module.exports = {
   User,
   Resource,
   Record,
+  Code
 }

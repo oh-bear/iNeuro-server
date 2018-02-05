@@ -45,9 +45,6 @@ export const QINIU_ACCESS = ''
 export const QINIU_SECRET = ''
 export const BUCKET = ''
 
-export const FITBIT_ID = '22CPH2'
-export const FITBIT_SECRET = '45daa091599d956626ab248b48500ef8'
-
 export const SQL_ACCOUNT = 'root'
 export const SQL_PASSWORD = ''
 
@@ -58,9 +55,20 @@ export const md5Pwd = (password) => {
   return md5(md5(password + salt))
 }
 
-export const checkToken = (uid, timestamp, token) => {
-  if (uid && timestamp && token) {
-    return token === md5Pwd(uid.toString() + timestamp.toString() + KEY)
+export const validate = (res, check, ...params) => {
+
+  for (let param of params) {
+    if (typeof param === 'undefined' || param === null) {
+      return res.json(MESSAGE.PARAMETER_ERROR)
+    }
   }
-  return false
+
+  if (check) {
+    const uid = params[0]
+    const timestamp = params[1]
+    const token = params[2]
+
+    if (token !== md5Pwd(uid.toString() + timestamp.toString() + KEY))
+      return res.json(MESSAGE.TOKEN_ERROR)
+  }
 }

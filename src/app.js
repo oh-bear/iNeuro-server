@@ -4,6 +4,7 @@ import express from 'express'
 import bodyParser from 'body-parser'
 
 import index from './routes/index'
+import user from './routes/user'
 
 const app = express()
 
@@ -11,16 +12,17 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 
 app.use('/', index)
+app.use('/users', user)
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   let err = new Error('Not Found')
   err.status = 404
   next(err)
 })
 
 // error handler
-app.use(function (err, req, res) {
+app.use((err, req, res) => {
   // set locals, only providing error in development
   res.locals.message = err.message
   res.locals.error = req.app.get('env') === 'development' ? err : {}
@@ -29,7 +31,6 @@ app.use(function (err, req, res) {
   res.status(err.status || 500)
   res.render('error')
 })
-
 
 const server = http.createServer(app)
 server.listen('7001')
