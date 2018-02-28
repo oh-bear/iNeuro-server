@@ -11,9 +11,12 @@ exports.sequelize = function () {
     SQL_ACCOUNT,
     SQL_PASSWORD,
     {
-      'dialect': 'mysql',
+      dialect: 'mysql',
       host: 'localhost',
-      port: 3306
+      port: 3306,
+      define: {
+        'underscored': true // 字段以下划线（_）来分割（默认是驼峰命名风格）
+      }
     }
   )
 }

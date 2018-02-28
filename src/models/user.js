@@ -10,5 +10,6 @@ module.exports = (sequelize, DataTypes) => {
     account: STRING(45),
     password: STRING(45),
     name: STRING(30),
+    face: STRING(125)
   })
 }

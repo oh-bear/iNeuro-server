@@ -1,8 +1,7 @@
 import express from 'express'
 
 import {
-  User,
-  Code
+  User
 } from '../models'
 
 import https from 'https'
@@ -38,67 +37,6 @@ router.get('/qiniu_token', (req, res) => {
   return res.json({...MESSAGE.OK, data})
 })
 
-router.post('/code', (req, res) => {
-
-  const {account} = req.body
-
-  validate(res, false, account)
-
-  const now = new Date().getTime()
-
-  const code = Math.floor(Math.random() * 8999 + 1000)
-
-  const postData = {
-    mobile: account,
-    text: '【iNeuro】您的验证码是' + code,
-    apikey: YUNPIAN_APIKEY
-  }
-
-  const postContent = querystring.stringify(postData)
-
-  const options = {
-    host: 'sms.yunpian.com',
-    path: '/v2/sms/single_send.json',
-    method: 'POST',
-    agent: false,
-    rejectUnauthorized: false,
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Content-Length': postContent.length
-    }
-  }
-
-  const model = {
-    account,
-    code,
-    time: now,
-    used: false
-  }
-
-  const sendMsg = async () => {
-    const req = https.request(options, (res) => {
-      res.setEncoding('utf8')
-    })
-    req.write(postContent)
-    req.end()
-    return true
-  }
-
-  const response = async () => {
-    const results = await Code.findAll({where: {account, used: false}})
-    if (results[0] !== undefined) {
-      if (now - results[0].time < 600000) {
-        return res.json(MESSAGE.QUICK_REQUEST)
-      }
-    }
-    await Code.create(model)
-    await sendMsg()
-    return res.json({...MESSAGE.OK, data: now})
-  }
-
-  response()
-})
-
 router.post('/login', (req, res) => {
 
   const {account, password} = req.body
@@ -132,31 +70,25 @@ router.post('/login', (req, res) => {
 
 router.post('/register', (req, res) => {
 
-  const {account, password, code, time} = req.body
+  const {account, password, name} = req.body
 
-  validate(res, false, account, password, code, time)
-
-  const findCode = async () => {
-    return await Code.findOne({where: {account, code, time, used: false}})
-  }
+  validate(res, false, account, password, name)
 
   const response = async () => {
-    const code = await findCode()
-    if (code) {
-      const user = await User.findOne({where: {account}})
-      if (user) {
-        return res.json(MESSAGE.USER_EXIST)
-      } else {
-        const userinfo = {
-          account,
-          password: md5Pwd(password),
-          name: account,
-        }
-        await User.create(userinfo)
-        return res.json(MESSAGE.OK)
+  
+    const user = await User.findOne({where: {account}})
+    if (user) {
+      return res.json(MESSAGE.USER_EXIST)
+    } else {
+      const userinfo = {
+        account,
+        password: md5Pwd(password),
+        name,
+        face: 'https://airing.ursb.me/image/avatar/40.png'
       }
+      await User.create(userinfo)
+      return res.json(MESSAGE.OK)
     }
-    return res.json(MESSAGE.CODE_ERROR)
   }
 
   response()
