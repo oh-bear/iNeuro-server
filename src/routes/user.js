@@ -11,7 +11,6 @@ import qiniu from 'qiniu'
 import {
   MESSAGE,
   KEY,
-  YUNPIAN_APIKEY,
   md5Pwd,
   validate,
   QINIU_ACCESS,
@@ -89,6 +88,18 @@ router.post('/register', (req, res) => {
       await User.create(userinfo)
       return res.json(MESSAGE.OK)
     }
+  }
+
+  response()
+})
+
+router.post('/update', (req, res) => {
+  const {uid, timestamp, token, account, name, face} = req.body
+  validate(res, true, uid, timestamp, token, account, name, face)
+
+  const response = async () => {
+    await User.update({account, name, face}, {where: {id: uid}})
+    return res.json(MESSAGE.OK)
   }
 
   response()
