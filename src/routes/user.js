@@ -4,8 +4,6 @@ import {
   User
 } from '../models'
 
-import https from 'https'
-import querystring from 'querystring'
 import qiniu from 'qiniu'
 
 import {
