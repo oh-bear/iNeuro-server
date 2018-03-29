@@ -1,7 +1,8 @@
 import express from 'express'
 
 import {
-  User
+  User,
+  Resource
 } from '../models'
 
 import qiniu from 'qiniu'
@@ -48,12 +49,15 @@ router.post('/login', (req, res) => {
       if (user.password === md5Pwd(password)) {
         const timestamp = new Date().getTime()
         const token = md5Pwd((user.id).toString() + timestamp.toString() + KEY)
+        const resources = await Resource.findAll()
+        const options = await resources.map(r => r.name)
         user.password = 0
         return res.json({
           ...MESSAGE.OK,
           data: {
             user,
-            key: {token, timestamp, uid: user.id}
+            key: {token, timestamp, uid: user.id},
+            options
           }
         })
       } else {

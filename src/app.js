@@ -6,6 +6,7 @@ import bodyParser from 'body-parser'
 import index from './routes/index'
 import user from './routes/user'
 import lib from './routes/lib'
+import learn from './routes/learn'
 
 const app = express()
 
@@ -15,6 +16,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use('/', index)
 app.use('/users', user)
 app.use('/libs', lib)
+app.use('/learn', learn)
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
