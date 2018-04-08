@@ -21,13 +21,13 @@ export const MESSAGE = {
     code: 405,
     message: '验证码错误',
   },
+  REVIEW_NOT_EXIST: {
+    code: 406,
+    message: '已无复习内容',
+  },
   PARAMETER_ERROR: {
     code: 422,
     message: '参数错误',
-  },
-  BUY_ERROR: {
-    code: 500,
-    message: '购买失败',
   },
   REQUEST_ERROR: {
     code: 501,
