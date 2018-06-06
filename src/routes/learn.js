@@ -72,6 +72,20 @@ router.get('/get_learn', (req, res) => {
   response()
 })
 
+// 随机出题接口，根据模块出题，一次性返回全部题目
+router.get('/get_learn_by_resource', (req, res) => {
+
+  const { token, uid, timestamp, system_name } = req.query
+  validate(res, true, uid, timestamp, token, system_name)
+
+  const response = async () => {
+    let data = await Resource.findAll({ where: { system_name } })
+
+    return res.json({ ...MESSAGE.OK, data })
+  }
+  response()
+})
+
 router.post('/wrong', (req, res) => {
 
   const { token, uid, timestamp, resource_id } = req.body
@@ -83,6 +97,26 @@ router.post('/wrong', (req, res) => {
     const record = await Record.findOne({ where: { user_id: uid, resource_id } })
     if (!record) {
       await Record.create({ user_id: uid, resource_id, result: -5 })
+    } else {
+      record.decrement('result')
+    }
+    return res.json(MESSAGE.OK)
+  }
+  response()
+})
+
+// TODO
+router.post('/forget', (req, res) => {
+
+  const { token, uid, timestamp, resource_id } = req.body
+  validate(res, true, uid, timestamp, token)
+
+  const response = async () => {
+    const resource = await Resource.findById(resource_id)
+    await resource.increment(['total_time', 'wrong_time'])
+    const record = await Record.findOne({ where: { user_id: uid, resource_id } })
+    if (!record) {
+      await Record.create({ user_id: uid, resource_id, result: -3 })
     } else {
       record.decrement('result')
     }
