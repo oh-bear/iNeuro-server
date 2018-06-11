@@ -79,7 +79,7 @@ router.get('/get_learn_by_resource', (req, res) => {
   validate(res, true, uid, timestamp, token, system_name)
 
   const response = async () => {
-    let data = await Resource.findAll({ where: { system_name } })
+    let data = await Resource.findAll({ where: { system_name: system_name.split(',') } })
 
     return res.json({ ...MESSAGE.OK, data })
   }
@@ -98,7 +98,7 @@ router.post('/wrong', (req, res) => {
     if (!record) {
       await Record.create({ user_id: uid, resource_id, result: -5 })
     } else {
-      record.decrement('result')
+      record.decrement('result', { by: 5 })
     }
     return res.json(MESSAGE.OK)
   }
@@ -118,7 +118,7 @@ router.post('/forget', (req, res) => {
     if (!record) {
       await Record.create({ user_id: uid, resource_id, result: -3 })
     } else {
-      record.decrement('result')
+      record.decrement('result', { by: 3 })
     }
     return res.json(MESSAGE.OK)
   }
@@ -150,11 +150,11 @@ router.post('/get_review', (req, res) => {
   validate(res, true, uid, timestamp, token)
 
   const response = async () => {
-    const records = await Record.findAll({where: {user_id: uid, result: {'lt': 0}}, include: [Resource]})
+    const records = await Record.findAll({ where: { user_id: uid, result: { 'lt': 0 } }, include: [Resource] })
     if (records.length !== 0) {
-      const idx = Math.floor(Math.random() * (records.length + 1))
+      const idx = Math.floor(Math.random() * (records.length + 1)) - 1
       const data = records[idx].dataValues.resource
-      return res.json({...MESSAGE.OK, data})
+      return res.json({ ...MESSAGE.OK, data, record: records[idx], length: records.length })
     }
 
     return res.json(MESSAGE.REVIEW_NOT_EXIST)
