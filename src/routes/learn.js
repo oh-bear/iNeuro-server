@@ -135,7 +135,7 @@ router.post('/right', (req, res) => {
     await resource.increment('total_time')
     const record = await Record.findOne({ where: { user_id: uid, resource_id } })
     if (!record) {
-      await Record.create({ user_id: uid, resource_id, result: 1 })
+      await Record.create({ user_id: uid, resource_id, result: 1 }) // todo: 这里改成100分 @zyktrcn
     } else {
       record.increment('result')
     }
@@ -159,6 +159,35 @@ router.post('/get_review', (req, res) => {
 
     return res.json(MESSAGE.REVIEW_NOT_EXIST)
   }
+  response()
+})
+
+router.get('/update_daily', (req, res) => {
+  const { password } = req.query;
+  const ONEDAY = 24 * 60 * 60 * 1000;
+  const now = Date.now();
+
+  const response = async () => {
+    if (passward === 'zyktrcnissb') {
+
+      const records = await Record.findAll()
+      for (let i = 0; i < records.length; i++) {
+        if ((Date.now() - records.last_time) >= ONEDAY && (Date.now() - records.last_time) < 2 * ONEDAY) {
+          await Record.update({ result: Math.floor(records[i].result * 0.337)}, { where: { id: records[i].id } })
+        } else if ((Date.now() - records.last_time) >= 2 * ONEDAY && (Date.now() - records.last_time) < 3 * ONEDAY) {
+          await Record.update({ result: Math.floor(records[i].result * 0.81)}, { where: { id: records[i].id } }) // 27.8
+        } else if ((Date.now() - records.last_time) >= 3 * ONEDAY && (Date.now() - records.last_time) < 4 * ONEDAY) {
+          await Record.update({ result: Math.floor(records[i].result * 0.91)}, { where: { id: records[i].id } }) // 25.4
+        } else {
+          await Record.update({ result: Math.floor(records[i].result * 0.95)}, { where: { id: records[i].id } }) // 知识保留率大概为95%
+        }
+      }
+      return res.json(MESSAGE.OK)
+    } else {
+      return res.json(MESSAGE.PARAMETER_ERROR)
+    }
+  }
+
   response()
 })
 
