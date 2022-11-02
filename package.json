@@ -30,11 +30,11 @@
     "babel-preset-stage-2": "^6.24.1",
     "babel-register": "^6.26.0",
     "eslint": "^4.12.1",
-    "gulp": "^3.9.0",
+    "gulp": "^4.0.2",
     "gulp-babel": "^7.0.0",
     "gulp-cli": "^1.4.0",
     "gulp-eslint": "^4.0.0",
-    "gulp-nodemon": "^2.2.1",
+    "gulp-nodemon": "^2.5.0",
     "gulp-watch": "^4.3.11",
     "nodemon": "^1.12.1"
   },
